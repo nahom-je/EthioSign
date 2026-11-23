@@ -1,0 +1,53 @@
+# ── Node / npm ───────────────────────────────────────────────
+node_modules/
+npm-debug.log*
+yarn-error.log
+.pnpm-debug.log*
+
+# ── Vite build output ────────────────────────────────────────
+frontend/dist/
+frontend/.vite/
+
+# ── Environment files (contain secrets) ─────────────────────
+.env
+.env.local
+.env.*.local
+backend/.env
+ai-service/.env
+
+# ── Python virtualenv & cache ────────────────────────────────
+ai-service/venv/
+__pycache__/
+*.py[cod]
+*.pyo
+.pytest_cache/
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# ── Model weights (too large for git — download separately) ──
+ai-service/models/weights/*.pt
+ai-service/models/weights/*.pth
+ai-service/models/weights/*.bin
+ai-service/models/weights/*.onnx
+
+# Keep gloss_dict.npy (small, needed by service)
+!ai-service/models/gloss_dict.npy
+
+# ── OS / editor ──────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.idea/
+.vscode/settings.json
+
+# ── Logs ─────────────────────────────────────────────────────
+*.log
+logs/
+
+# ── Misc ─────────────────────────────────────────────────────
+*.tmp
+*.bak
+scratch_ceslr/
