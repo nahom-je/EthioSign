@@ -144,19 +144,35 @@ export default function DictionaryPage() {
               className="bg-white rounded-2xl border border-slate-200 hover:border-blue-400 hover:shadow-md transition-all overflow-hidden flex flex-col group cursor-pointer"
               onClick={() => setInspectingSign(sign)}
             >
-              {/* Video thumbnail placeholder */}
+              {/* Video thumbnail / preview */}
               <div className="relative aspect-video bg-slate-900 flex items-center justify-center overflow-hidden">
+                {sign.videoUrl ? (
+                  <video
+                    src={sign.videoUrl}
+                    muted
+                    loop
+                    playsInline
+                    className="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity"
+                    onMouseEnter={e => e.target.play()}
+                    onMouseLeave={e => { e.target.pause(); e.target.currentTime = 0; }}
+                  />
+                ) : null}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent z-10" />
-                <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm text-white flex items-center justify-center group-hover:scale-110 group-hover:bg-blue-600 transition-all z-20">
+                <div className={`w-12 h-12 rounded-full backdrop-blur-sm text-white flex items-center justify-center group-hover:scale-110 transition-all z-20 ${sign.videoUrl ? 'bg-blue-600/80 group-hover:bg-blue-600' : 'bg-white/20 group-hover:bg-white/30'}`}>
                   <Play className="w-5 h-5 ml-0.5" />
                 </div>
                 <div className="absolute top-2.5 right-2.5 z-20">
-                  <span className="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-emerald-500/90 text-white flex items-center gap-1">
+                  <span className={`px-2 py-0.5 rounded-md text-[10px] font-semibold flex items-center gap-1 ${sign.videoUrl ? 'bg-emerald-500/90 text-white' : 'bg-slate-700/80 text-slate-300'}`}>
                     <ShieldCheck className="w-3 h-3" />
-                    {sign.isValidated ? 'Validated' : 'CESLR'}
+                    {sign.videoUrl ? 'Video Ready' : sign.isValidated ? 'Validated' : 'CESLR'}
                   </span>
                 </div>
-                <div className="absolute bottom-2.5 left-3 z-20">
+                {!sign.videoUrl && (
+                  <div className="absolute bottom-2.5 left-3 z-20">
+                    <span className="text-[10px] font-medium text-slate-400 italic">Video coming soon</span>
+                  </div>
+                )}
+                <div className="absolute bottom-2.5 right-3 z-20">
                   <span className="text-xs font-medium text-slate-200 capitalize">{sign.category}</span>
                 </div>
               </div>

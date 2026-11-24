@@ -100,4 +100,30 @@ router.get('/:id', async (req, res) => {
   }
 });
 
+// ── PUT /api/signs/:id — update videoUrl, thumbnailUrl, description, isValidated
+router.put('/:id', async (req, res) => {
+  try {
+    const allowed = ['videoUrl', 'thumbnailUrl', 'description', 'isValidated', 'tags', 'frequency'];
+    const update  = {};
+    for (const key of allowed) {
+      if (key in req.body) update[key] = req.body[key];
+    }
+    if (Object.keys(update).length === 0) {
+      return res.status(400).json({ success: false, error: 'No updatable fields provided.' });
+    }
+    const sign = await Sign.findByIdAndUpdate(
+      req.params.id,
+      { $set: update },
+      { new: true, runValidators: true }
+    ).select('-__v').lean();
+    if (!sign) {
+      return res.status(404).json({ success: false, error: 'Sign not found.' });
+    }
+    res.json({ success: true, data: sign });
+  } catch (err) {
+    console.error('[signs] PUT /:id error:', err);
+    res.status(500).json({ success: false, error: 'Update failed.' });
+  }
+});
+
 export default router;
