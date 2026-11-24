@@ -80,9 +80,11 @@ class CESLRModel(nn.Module):
         self.temporal_conv = TemporalConv(512, 512, kernel_size=3)
 
         # ── BiLSTM ───────────────────────────────────────────────────────
+        # hidden_size=512 bidirectional → 1024-dim output fed to classifier
+        # (matches the actual baseline-res18-epoch38 checkpoint dimensions)
         self.lstm = nn.LSTM(
             input_size=512,
-            hidden_size=256,
+            hidden_size=512,
             num_layers=2,
             bidirectional=True,
             batch_first=True,
@@ -90,7 +92,8 @@ class CESLRModel(nn.Module):
         )
 
         # ── CTC projection (num_classes + 1 for blank token) ─────────────
-        self.classifier = nn.Linear(512, num_classes)
+        # Input = 2 * hidden_size = 1024 (bidirectional)
+        self.classifier = nn.Linear(1024, num_classes)
 
     def forward(self, x):
         """
@@ -180,7 +183,8 @@ class ModelLoader:
         logger.info(f"[ModelLoader] Gloss dict loaded — {len(self.gloss_dict)} glosses, {self.num_classes} classes (inc. blank).")
 
     # Expected size of the full checkpoint (bytes). Anything smaller = partial download.
-    _EXPECTED_MIN_BYTES = 370 * 1024 * 1024  # 370 MB guard
+    # Actual file is 363 MB; guard at 300 MB to allow for minor version differences.
+    _EXPECTED_MIN_BYTES = 300 * 1024 * 1024  # 300 MB guard
 
     def _load_model(self):
         ckpt_path = Path(MODEL_CHECKPOINT)
