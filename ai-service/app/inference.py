@@ -123,19 +123,19 @@ def run_inference(
     # ── Build input from whichever source is available ────────────────────
     result = None
 
-    if landmark_sequence and len(landmark_sequence) > 0:
-        norm_seq = normalise_landmark_sequence(landmark_sequence)
-        # For landmark-only mode: use the first frame as a single-frame clip
-        # (Full landmark sequence model training is Phase 4)
-        logger.debug(f"[Inference] Landmark sequence mode: {len(landmark_sequence)} frames")
-        # TODO Phase 4: replace with landmark sequence LSTM inference
-        result = loader._fallback_prediction()
-
-    if result is None and frames_b64 and len(frames_b64) > 0:
+    # Priority:
+    # 1. frames_b64 (RGB visual clip) → evaluated by CESLR visual model
+    # 2. landmark_sequence (MediaPipe coordinates) → fallback if no frames
+    if frames_b64 and len(frames_b64) > 0:
         logger.debug(f"[Inference] Frame clip mode: {len(frames_b64)} frames")
         clip = build_clip_from_frames(frames_b64)
         if len(clip) > 0:
             result = loader.predict_from_frames(clip)
+
+    if result is None and landmark_sequence and len(landmark_sequence) > 0:
+        norm_seq = normalise_landmark_sequence(landmark_sequence)
+        logger.debug(f"[Inference] Landmark sequence mode: {len(landmark_sequence)} frames")
+        result = loader._fallback_prediction()
 
     if result is None and landmark_vector:
         # Treat single landmark as a 1-frame sequence (very low quality, placeholder)

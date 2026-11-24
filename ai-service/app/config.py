@@ -27,7 +27,7 @@ DEVICE          = os.environ.get("ETHIOSIGN_DEVICE", "auto")   # auto | cpu | cu
 IMAGE_SIZE      = int(os.environ.get("ETHIOSIGN_IMG_SIZE", "256"))
 CROP_SIZE       = int(os.environ.get("ETHIOSIGN_CROP_SIZE", "224"))
 MAX_FRAMES      = int(os.environ.get("ETHIOSIGN_MAX_FRAMES", "120"))
-MIN_CONF        = float(os.environ.get("ETHIOSIGN_MIN_CONF", "0.65"))
+MIN_CONF        = float(os.environ.get("ETHIOSIGN_MIN_CONF", "0.35"))
 
 # ── Service ───────────────────────────────────────────────────────────────────
 HOST            = os.environ.get("ETHIOSIGN_HOST", "0.0.0.0")
