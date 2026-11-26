@@ -36,3 +36,37 @@
   outline: 2px solid #2563eb !important;
   outline-offset: 2px !important;
 }
+
+/* Large Text accessibility scaling */
+html.large-text {
+  font-size: 112.5%;
+}
+
+/* High Contrast Mode (WCAG 2.2 AA) */
+html.high-contrast body {
+  background-color: #020617;
+  color: #f8fafc;
+}
+
+html.high-contrast .bg-white,
+html.high-contrast .bg-slate-50 {
+  background-color: #0f172a !important;
+  color: #f8fafc !important;
+  border-color: #64748b !important;
+}
+
+html.high-contrast .text-slate-900,
+html.high-contrast .text-slate-800,
+html.high-contrast .text-slate-700 {
+  color: #f8fafc !important;
+}
+
+html.high-contrast .text-slate-600,
+html.high-contrast .text-slate-500 {
+  color: #cbd5e1 !important;
+}
+
+html.high-contrast .border-slate-200,
+html.high-contrast .border-slate-100 {
+  border-color: #475569 !important;
+}

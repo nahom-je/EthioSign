@@ -17,6 +17,7 @@ import {
 import WebcamCapture from '../components/sign/WebcamCapture';
 import TranslationCard from '../components/sign/TranslationCard';
 import { useWebcam } from '../hooks/useWebcam';
+import { useSpeechSynthesis } from '../hooks/useSpeechSynthesis';
 import { recognitionService } from '../services/recognitionService';
 import { useSettings } from '../context/SettingsContext';
 import { ETHSL_VOCABULARY } from '../data/ethslVocabulary';
@@ -30,8 +31,9 @@ export default function SignToTextPage() {
   // Dev/demo gloss picker (only shown in mock mode)
   const [selectedGlossIndex, setSelectedGlossIndex] = useState('');
 
-  const { selectedCamera, addHistoryItem } = useSettings();
+  const { selectedCamera, autoSpeak, speechRate, addHistoryItem } = useSettings();
   const webcam = useWebcam(selectedCamera);
+  const { speak } = useSpeechSynthesis();
 
   // ── Core recognition handler ──────────────────────────────────────────────
   const doRecognize = useCallback(async (landmarkSequence = null) => {
@@ -55,6 +57,9 @@ export default function SignToTextPage() {
 
       if (result.success && result.prediction) {
         setPrediction(result.prediction);
+        if (autoSpeak) {
+          speak(result.prediction.english || result.prediction.amharic, { rate: speechRate });
+        }
         addHistoryItem({
           sender:     'deaf',
           amharic:    result.prediction.amharic,
@@ -69,7 +74,7 @@ export default function SignToTextPage() {
     } finally {
       setIsProcessing(false);
     }
-  }, [isProcessing, selectedGlossIndex, webcam, addHistoryItem]);
+  }, [isProcessing, selectedGlossIndex, webcam, autoSpeak, speechRate, speak, addHistoryItem]);
 
   // Auto-detect: fired by useSignDetector via WebcamCapture when a gesture completes
   const handleSignCaptured = useCallback((landmarkSequence) => {

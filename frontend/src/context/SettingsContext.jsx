@@ -61,11 +61,19 @@ export function SettingsProvider({ children }) {
   useEffect(() => {
     localStorage.setItem('ethiosign_large_text', largeText);
     if (largeText) {
-      document.documentElement.classList.add('text-lg');
+      document.documentElement.classList.add('large-text');
     } else {
-      document.documentElement.classList.remove('text-lg');
+      document.documentElement.classList.remove('large-text');
     }
   }, [largeText]);
+
+  useEffect(() => {
+    localStorage.setItem('ethiosign_selected_camera', selectedCamera);
+  }, [selectedCamera]);
+
+  useEffect(() => {
+    localStorage.setItem('ethiosign_selected_mic', selectedMic);
+  }, [selectedMic]);
 
   useEffect(() => {
     localStorage.setItem('ethiosign_auto_speak', autoSpeak);

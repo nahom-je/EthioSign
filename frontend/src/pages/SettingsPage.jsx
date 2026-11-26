@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { 
   Settings as SettingsIcon, 
   Camera, 
@@ -12,7 +12,6 @@ import {
 } from 'lucide-react';
 import { useSettings } from '../context/SettingsContext';
 import { useSpeechSynthesis } from '../hooks/useSpeechSynthesis';
-import { useWebcam } from '../hooks/useWebcam';
 
 export default function SettingsPage() {
   const {
@@ -36,9 +35,29 @@ export default function SettingsPage() {
     clearHistory
   } = useSettings();
 
-  const { voices, speak, isSpeaking } = useSpeechSynthesis();
-  const webcam = useWebcam();
+  const { speak, isSpeaking } = useSpeechSynthesis();
   const [clearedNotice, setClearedNotice] = useState(false);
+  const [cameras, setCameras] = useState([]);
+  const [mics, setMics] = useState([]);
+  const [devicesLoading, setDevicesLoading] = useState(false);
+
+  const loadDevices = useCallback(async () => {
+    if (!navigator.mediaDevices?.enumerateDevices) return;
+    setDevicesLoading(true);
+    try {
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      setCameras(devices.filter((d) => d.kind === 'videoinput'));
+      setMics(devices.filter((d) => d.kind === 'audioinput'));
+    } catch (err) {
+      console.warn('Could not enumerate media devices:', err);
+    } finally {
+      setDevicesLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadDevices();
+  }, [loadDevices]);
 
   const handleClear = () => {
     clearHistory();
@@ -209,7 +228,67 @@ export default function SettingsPage() {
           </div>
         </div>
 
-        {/* 3. Privacy & Session Storage */}
+        {/* 3. Camera & Microphone Hardware */}
+        <div className="bg-white rounded-3xl border border-slate-200 p-6 shadow-xs space-y-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-500">
+              <Camera className="w-4 h-4 text-blue-600" />
+              <span>Camera &amp; Microphone Devices</span>
+            </div>
+            <button
+              onClick={loadDevices}
+              disabled={devicesLoading}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors"
+            >
+              <RefreshCw className={`w-3.5 h-3.5 ${devicesLoading ? 'animate-spin' : ''}`} />
+              <span>Refresh</span>
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-100 space-y-2">
+              <label htmlFor="camera-select" className="text-sm font-semibold text-slate-900 flex items-center gap-2">
+                <Camera className="w-4 h-4 text-slate-500" />
+                <span>Preferred Camera</span>
+              </label>
+              <select
+                id="camera-select"
+                value={selectedCamera}
+                onChange={(e) => setSelectedCamera(e.target.value)}
+                className="w-full px-3 py-2 rounded-xl bg-white border border-slate-200 text-xs text-slate-800 focus:ring-2 focus:ring-blue-500 focus:outline-hidden"
+              >
+                <option value="">Default System Camera</option>
+                {cameras.map((cam, idx) => (
+                  <option key={cam.deviceId || idx} value={cam.deviceId}>
+                    {cam.label || `Camera ${idx + 1}`}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-100 space-y-2">
+              <label htmlFor="mic-select" className="text-sm font-semibold text-slate-900 flex items-center gap-2">
+                <Mic className="w-4 h-4 text-slate-500" />
+                <span>Preferred Microphone</span>
+              </label>
+              <select
+                id="mic-select"
+                value={selectedMic}
+                onChange={(e) => setSelectedMic(e.target.value)}
+                className="w-full px-3 py-2 rounded-xl bg-white border border-slate-200 text-xs text-slate-800 focus:ring-2 focus:ring-blue-500 focus:outline-hidden"
+              >
+                <option value="">Default System Microphone</option>
+                {mics.map((mic, idx) => (
+                  <option key={mic.deviceId || idx} value={mic.deviceId}>
+                    {mic.label || `Microphone ${idx + 1}`}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+        </div>
+
+        {/* 4. Privacy & Session Storage */}
         <div className="bg-white rounded-3xl border border-slate-200 p-6 shadow-xs space-y-6">
           <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-500">
             <Shield className="w-4 h-4 text-emerald-600" />
