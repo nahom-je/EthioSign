@@ -7,6 +7,7 @@ import signsRouter from './routes/signs.js';
 import categoriesRouter from './routes/categories.js';
 import conversationsRouter from './routes/conversations.js';
 import feedbackRouter from './routes/feedback.js';
+import authRouter from './routes/auth.js';
 
 const app = express();
 
@@ -32,6 +33,7 @@ app.use('/api/signs', signsRouter);
 app.use('/api/categories', categoriesRouter);
 app.use('/api/conversations', conversationsRouter);
 app.use('/api/feedback', feedbackRouter);
+app.use('/api/auth', authRouter);
 
 // Fallback error handler
 app.use((err, req, res, next) => {

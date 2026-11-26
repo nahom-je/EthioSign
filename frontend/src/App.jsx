@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Layout from './components/layout/Layout';
 import ErrorBoundary from './components/ErrorBoundary';
 import { SettingsProvider } from './context/SettingsContext';
+import { AuthProvider } from './context/AuthContext';
 
 const LandingPage      = lazy(() => import('./pages/LandingPage'));
 const DashboardPage    = lazy(() => import('./pages/DashboardPage'));
@@ -11,6 +12,8 @@ const SpeechToSignPage = lazy(() => import('./pages/SpeechToSignPage'));
 const DictionaryPage   = lazy(() => import('./pages/DictionaryPage'));
 const AboutPage        = lazy(() => import('./pages/AboutPage'));
 const SettingsPage     = lazy(() => import('./pages/SettingsPage'));
+const LoginPage        = lazy(() => import('./pages/LoginPage'));
+const RegisterPage     = lazy(() => import('./pages/RegisterPage'));
 
 function PageLoader() {
   return (
@@ -25,26 +28,30 @@ function PageLoader() {
 
 export default function App() {
   return (
-    <SettingsProvider>
-      <BrowserRouter>
-        <Layout>
-          <ErrorBoundary>
-            <Suspense fallback={<PageLoader />}>
-              <Routes>
-                <Route path="/" element={<LandingPage />} />
-                <Route path="/dashboard" element={<DashboardPage />} />
-                <Route path="/sign-to-text" element={<SignToTextPage />} />
-                <Route path="/speech-to-sign" element={<SpeechToSignPage />} />
-                <Route path="/dictionary" element={<DictionaryPage />} />
-                <Route path="/about" element={<AboutPage />} />
-                <Route path="/settings" element={<SettingsPage />} />
-                {/* Fallback */}
-                <Route path="*" element={<Navigate to="/" replace />} />
-              </Routes>
-            </Suspense>
-          </ErrorBoundary>
-        </Layout>
-      </BrowserRouter>
-    </SettingsProvider>
+    <AuthProvider>
+      <SettingsProvider>
+        <BrowserRouter>
+          <Layout>
+            <ErrorBoundary>
+              <Suspense fallback={<PageLoader />}>
+                <Routes>
+                  <Route path="/" element={<LandingPage />} />
+                  <Route path="/dashboard" element={<DashboardPage />} />
+                  <Route path="/sign-to-text" element={<SignToTextPage />} />
+                  <Route path="/speech-to-sign" element={<SpeechToSignPage />} />
+                  <Route path="/dictionary" element={<DictionaryPage />} />
+                  <Route path="/about" element={<AboutPage />} />
+                  <Route path="/settings" element={<SettingsPage />} />
+                  <Route path="/login" element={<LoginPage />} />
+                  <Route path="/register" element={<RegisterPage />} />
+                  {/* Fallback */}
+                  <Route path="*" element={<Navigate to="/" replace />} />
+                </Routes>
+              </Suspense>
+            </ErrorBoundary>
+          </Layout>
+        </BrowserRouter>
+      </SettingsProvider>
+    </AuthProvider>
   );
 }
